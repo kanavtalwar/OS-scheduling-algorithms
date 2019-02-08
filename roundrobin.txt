@@ -1,0 +1,140 @@
+    package roundrobin;
+    import java.util.Scanner;
+class RoundRobin {
+
+        public static void main(String[] args) {
+           Scanner sc=new Scanner(System.in);	//Scanner object (sc) to take input
+
+           System.out.println("Enter the total number of processes");
+           
+           int total_processes=sc.nextInt();
+           int quantum=0,flag=0,lastpos=0,time;
+           float avg=0;
+           int Arrival[] = new int [total_processes];
+           int Burst[] = new int[total_processes];
+           int Waiting[] = new int[total_processes];
+           int Name[]=new int[total_processes];
+
+           System.out.println("Enter the value of quantum");
+           quantum=sc.nextInt();		//Input Quantum
+
+           for(int i=0;i<total_processes;i++)
+           {
+               System.out.println("Enter the Arrival and Burst Time of process "+(i+1));
+
+               Arrival[i]=sc.nextInt();		//Input Arrival Time of Process (i+1)
+               Burst[i]=sc.nextInt();		//Input Burst Time of Process (i+1)
+               Name[i]=i+1;
+               Waiting[i]=-Arrival[i];		/*Waiting for each process will be calculated but it 
+                                                  Arrival time will be subtracted so it's done before hand  */
+           }
+
+
+           for(int i=0;i<total_processes;i++)	//Sort According to Arrival time in Ascending Order
+            {
+                for(int j=1;j<total_processes-i;i++)
+                {
+                    if(Arrival[j-1]>Arrival[j])
+                        swap(Arrival,Burst,Name,j);	//Calling Function Swap to interchange two processes
+                }
+            }
+
+
+           time=Arrival[0];
+
+           while(true)
+           {	
+               int noprocessran=0;              /*Used to increase time if arrival time of some processes 
+                                                  are >time and the arrived processes have completed */
+               
+               flag=check(Burst,total_processes);//Calling Function check to see if the Burst of all processes is 0 or not
+
+               if(flag==-1)                      //If Burst of all processes is 0,stop the program
+                   break;
+
+               else
+               {
+
+                    for(int i=0;i<total_processes;i++)
+                        {                          
+                            if(Arrival[i]<=time && Burst[i]!=0)	//Means that the process has arrived and still needs more CPUtime
+                                {    
+
+                                    if(Burst[i]>=quantum && check(Burst,total_processes)!=-1)
+                                        {   
+                                            if(lastpos!=i)	//If last process is same as before then waiting time won't be increased
+                                            Waiting[i]+=time;
+                                            System.out.print(time+" P"+Name[i]+" ");
+                                            Burst[i]-=quantum;	//Remove 1 quantum from Burst
+                                            time+=quantum;		//Add 1 quantum to time                                            
+                                            noprocessran=1;     //Means that aleast one process has run
+                                            System.out.println(time+" ");
+
+                                        }
+                            else                                //If quantum is more and burst remaining is less
+                                {    
+                                    if(lastpos!=i)
+                                    Waiting[i]+=time;
+                                    System.out.print(time+" P"+Name[i]+" ");
+                                    time+=Burst[i];
+                                    Burst[i]=0;    
+                                    noprocessran=1;
+                                    System.out.println(time+" ");
+                                }
+                                    
+                            lastpos=i;                          //Last Process that executed
+                                }
+                        }
+                    
+                    if(noprocessran==0)
+                        time=Arrival[lastpos+1];                //If no process ran,change time to the next Arrival
+               }
+           }
+
+           
+           for(int i=0;i<total_processes;i++)	    //Calculating total waiting time
+           {    
+               System.out.println("Waiting of "+(i+1)+" "+Waiting[i]);
+               avg+=Waiting[i];
+           }
+
+           avg=avg/total_processes;                 //Calculating average waiting time
+
+           System.out.println("Avg Waiting Time: "+avg);
+        }
+
+
+        static int check(int B[],int totalprocesses)//Method to check if Burst time of any process is still left
+        {
+            int flag=0;
+
+            for(int i=0;i<totalprocesses;i++)
+            {
+                if(B[i]!=0)
+                {
+                    flag=1;break;                   //If Burst of any process is left change flag to 1 and return 0 else -1
+                }
+            }
+
+            if(flag==0)
+                return -1;
+
+            else return 0;
+        }
+
+        static void swap(int A[],int B[],int C[],int j)    //Process to swap Arrival Time(A) and Burst time (B)
+        {
+            int temp=A[j-1];
+            A[j-1]=A[j];
+            A[j]=temp;
+
+            temp=B[j-1];
+            B[j-1]=B[j];
+            B[j]=temp;
+            
+            temp=C[j-1];
+            C[j-1]=C[j];
+            C[j]=temp;
+                    
+        }
+    }     

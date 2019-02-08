@@ -1,0 +1,128 @@
+    package sjf;
+    import java.util.Scanner;   //SJF Non Preemptive
+class SJF {
+
+        public static void main(String[] args) {
+            Scanner sc=new Scanner(System.in);
+            
+            System.out.println("Enter the number of Processes");
+            
+            int total_processes=sc.nextInt();
+            int Arrival[]=new int[total_processes],
+                Burst[]=new int [total_processes],
+                Name[]=new int[total_processes];
+            
+            int time=Arrival[0],index=0;
+            float waiting=0;
+
+                for(int i=0;i<total_processes;i++)  //Input Arrival and Burst time
+                    {
+                         System.out.println("Enter the Arrival and Burst Time respectively of Process"+(i+1));
+                         Arrival[i]=sc.nextInt();
+                         Burst[i]=sc.nextInt();
+                         Name[i]=(i+1);
+                    }
+
+            for(int i=0;i<total_processes;i++)      //Arrange in Ascending order of Arrival Time
+            {
+                for(int j=1;j<total_processes-i;i++)
+                {
+                    if(Arrival[j-1]>Arrival[j])
+                        swap(Arrival,Burst,Name,j);      //Calling function to swap processes
+                }
+            }
+
+            while(index!=-1)
+            {   
+                if(time>Arrival[total_processes-1]) //All processes are loaded(have arrived)
+                {
+                    index=check(Burst,total_processes);
+                    if(index==0)                    //Burst time isn't 0 for all processes
+                        index=total_processes-1;    //Set index to total_processes because now every process can run
+                }
+
+                else index=available_processes(Arrival, Burst, time, total_processes);  //Find the index of last process that arrived
+
+                if(index>=0)                        //Won't work if index=-1
+                {   
+
+                    index=shortestjob(Burst,index);  //Find shortest job among the arrived processes  
+                    System.out.print(time +" P"+Name[index]+" ");
+                    waiting+=time-Arrival[index];      
+                    time+=Burst[index];
+                    Burst[index]=0;  
+                    System.out.println(time+" ");
+                }
+                
+            }
+            
+            System.out.println("Avg Waiting Time: "+(waiting/total_processes));
+        }
+        
+        static void swap(int A[],int B[],int C[],int j)        //Function to Swap Arrival and Burst
+        {
+            int temp=A[j-1];
+            A[j-1]=A[j];
+            A[j]=temp;
+
+            temp=B[j-1];
+            B[j-1]=B[j];
+            B[j]=temp;
+            
+            temp=C[j-1];
+            C[j-1]=C[j];
+            C[j]=temp;
+        }
+
+        static int available_processes(int A[],int B[],int time,int totalprocesses) //Function to check the processes that have arrived
+        {   
+            int index=-1;
+            if(check(B,totalprocesses)==-1)
+            {
+
+                return -1;
+            }
+
+            for(int i=0;i<totalprocesses;i++)
+            {
+                if(time>=A[i] && B[i]!=0)
+                {   
+
+                    index=i;    //Find the last index of last process
+                }
+            }
+            return index;
+        }
+
+        static int shortestjob(int B[],int index)   //Find the shortest job among the arrived processes
+        {
+            int min=10000,shortjobindex=-1;
+            
+            for(int i=0;i<=index;i++)
+            {
+                if(B[i]<min && B[i]!=0)
+                {
+                    shortjobindex=i;
+                    min=B[i];
+                }
+            }
+            return shortjobindex;                   //Returns -1 if burst of every process is 0 else index of shortest process
+        }
+
+        static int check(int B[],int totalprocesses)
+        {
+            int flag=0;
+            for(int i=0;i<totalprocesses;i++)
+            {
+                if(B[i]!=0)
+                {
+                    flag=1;break;
+                }
+            }
+            if(flag==0)
+                return -1;
+            else return 0;
+        }
+    }
+
+   

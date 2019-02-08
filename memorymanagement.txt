@@ -1,0 +1,84 @@
+import java.util.Scanner;
+class MemoryManagement {
+
+	public static void main(String[] args) {
+		Scanner sc=new Scanner(System.in);
+		int fit,best,first,worst;
+		
+		/*
+		*Allocating RAM size
+		*/
+		
+		System.out.println("Enter Total Ram");
+		int total_ram=sc.nextInt();
+		
+		/*
+		*Number of Partition in RAM
+		*/
+		
+		System.out.println("Enter the total number of partitions");
+		
+		int n=sc.nextInt();
+		int memory_size[]=new int[n];
+		
+		/*
+		*Value of Partition
+		*/
+		
+		for(int i=0;i<n;i++)
+		{
+			System.out.println("Enter value of parition "+(i+1));
+			
+			memory_size[i]=sc.nextInt();
+					
+		}
+		
+		System.out.println("Enter the memory size of current application");
+		fit=sc.nextInt();
+		
+		best=memory_size[0];
+		
+		for(int i=0;i<n;i++)
+		{
+			if(memory_size[i]>=fit)
+			{
+				if(memory_size[i]<best)
+				{
+					best=memory_size[i];
+				}
+			}
+		}
+		first=memory_size[0];
+		for(int i=0;i<n;i++)
+		{
+			if(memory_size[i]>=fit)
+			{
+				first=memory_size[i];
+				
+				break;
+			}
+		}
+		
+		worst=memory_size[0];
+		
+		for(int i=0;i<n;i++)
+		{
+			if(memory_size[i]>=fit)
+			{
+				if(memory_size[i]>worst)
+				{
+					worst=memory_size[i];
+				}
+			}
+		}
+		
+		/*
+		*RESULTS
+		*/
+		System.out.println("Best :"+best);
+		System.out.println("Worst :"+worst);
+		System.out.println("First :"+first);
+		
+	}
+
+} 
